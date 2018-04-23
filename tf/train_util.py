@@ -45,7 +45,7 @@ def onehot(index):
 	""" It creates a one-hot vector with a 1.0 in
 		position represented by index 
 	"""
-	onehot = np.zeros(1000)
+	onehot = np.zeros(6)
 	onehot[index] = 1.0
 	return onehot
 
@@ -75,7 +75,7 @@ def read_batch(batch_size, images_source, wnid_labels):
 	for i in range(batch_size):
 		# random class choice 
 		# (randomly choose a folder of image of the same class from a list of previously sorted wnids)
-		class_index = random.randint(0, 999)
+		class_index = random.randint(0, 5)
 
 		folder = wnid_labels[class_index]
 		batch_images.append(read_image(os.path.join(images_source, folder)))
@@ -128,9 +128,9 @@ def preprocess_image(image_path):
 		img = img.resize((w, 256), Image.ANTIALIAS)
 
 	# random 244x224 patch
-	x = random.randint(0, img.size[0] - 224)
-	y = random.randint(0, img.size[1] - 224)
-	img_cropped = img.crop((x, y, x + 224, y + 224))
+	x = random.randint(0, img.size[0] - 150)
+	y = random.randint(0, img.size[1] - 150)
+	img_cropped = img.crop((x, y, x + 150, y + 150))
 
 	cropped_im_array = np.array(img_cropped, dtype=np.float32)
 

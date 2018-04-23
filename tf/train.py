@@ -37,21 +37,21 @@ def train(
 			summary_path: path where to save logs for TensorBoard
 
 	"""
-	train_img_path = os.path.join(imagenet_path, 'ILSVRC2012_img_train')
+	train_img_path = '../images'
 	ts_size = tu.imagenet_size(train_img_path)
 	num_batches = int(float(ts_size) / batch_size)
 
-	wnid_labels, _ = tu.load_imagenet_meta(os.path.join(imagenet_path, 'data/meta.mat'))
+	wnid_labels = ['0','1','2']
 
-	x = tf.placeholder(tf.float32, [None, 224, 224, 3])
-	y = tf.placeholder(tf.float32, [None, 1000])
+	x = tf.placeholder(tf.float32, [None, 150, 150, 6])
+	y = tf.placeholder(tf.float32, [None, 6])
 
 	lr = tf.placeholder(tf.float32)
 	keep_prob = tf.placeholder(tf.float32)
 
 	# queue of examples being filled on the cpu
-	with tf.device('/cpu:0'):
-		q = tf.FIFOQueue(batch_size * 3, [tf.float32, tf.float32], shapes=[[224, 224, 3], [1000]])
+	with tf.device('/gpu:0'):
+		q = tf.FIFOQueue(batch_size * 3, [tf.float32, tf.float32], shapes=[[150, 150, 3], [6]])
 		enqueue_op = q.enqueue_many([x, y])
 
 		x_b, y_b = q.dequeue_many(batch_size)
@@ -158,7 +158,7 @@ if __name__ == '__main__':
 	LAMBDA = 5e-04 # for weight decay
 	LEARNING_RATE = 1e-03
 	EPOCHS = 90
-	BATCH_SIZE = 128
+	BATCH_SIZE = 3
 	CKPT_PATH = 'ckpt-alexnet'
 	if not os.path.exists(CKPT_PATH):
 		os.makedirs(CKPT_PATH)
@@ -169,11 +169,12 @@ if __name__ == '__main__':
 	IMAGENET_PATH = 'ILSVRC2012'
 	DISPLAY_STEP = 10
 	TEST_STEP = 500
+	resume = False
 	
-	if sys.argv[1] == '-resume':
-		resume = True
-	elif sys.argv[1] == '-scratch': 
-		resume = False
+	# if sys.argv[1] == '-resume':
+	# 	resume = True
+	# elif sys.argv[1] == '-scratch':
+	# 	resume = False
 
 	train(
 		EPOCHS, 
